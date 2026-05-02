@@ -11,7 +11,7 @@ def find_planets(kepler_id: str) -> list[dict]:
 
     max_period=bls.period_at_max_power.value
     max_transit=bls.transit_time_at_max_power.value
-    max_duration=bls.duration_at_max_power.value
+    max_duration=bls.duration_at_max_power.value * 24
 
     return [
         {
