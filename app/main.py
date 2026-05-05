@@ -19,8 +19,13 @@ def health():
 @app.get("/exoplanets/{kepler_id}")
 def detect_exoplanets(kepler_id: str):
     logger.info(f"Searching for planets for star: {kepler_id}")
-    candidates= find_planets(kepler_id)
-
+    try:
+        candidates= find_planets(kepler_id)
+    except RuntimeError as e:
+        logger.error(f"Error in search")
+        raise HTTPException(
+            status_code=503,detail=f"Service is not available {e}"
+        )
     if len(candidates) == 0:
         logger.warning(f"No candidates found for star: {kepler_id}")
         raise HTTPException(

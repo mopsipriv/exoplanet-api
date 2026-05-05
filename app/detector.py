@@ -2,10 +2,17 @@ import lightkurve as lk
 import numpy as np
 
 def find_planets(kepler_id: str) -> list[dict]:
-    search_result=lk.search_lightcurve(kepler_id,mission="Kepler",cadence="long")
+    try:
+        search_result=lk.search_lightcurve(kepler_id,mission="Kepler",cadence="long")
+    except Exception as e:
+        raise RuntimeError(f"Failed to search Kepler archive for '{kepler_id}': {e}")
     if len(search_result)==0:
         return []
-    lc=search_result[0].download()
+    try:
+        lc=search_result[0].download()
+    except Exception as e:
+        raise RuntimeError(f"Failed to download light curve for '{kepler_id}': {e}")
+    
     lc_clean=lc.remove_nans().remove_outliers().flatten()
     bls = lc_clean.to_periodogram(method="bls", period=np.linspace(0.5, 10, 10000))
 
