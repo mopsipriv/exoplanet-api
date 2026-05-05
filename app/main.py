@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from app.detector import find_planets
 from app.models import DetectionResponse,PlanetCandidate
 
@@ -16,6 +16,11 @@ def health():
 def detect_exoplanets(kepler_id: str):
     candidates= find_planets(kepler_id)
 
+    if len(candidates) == 0:
+        raise HTTPException(
+            status_code=404,detail=f"No data found for star '{kepler_id}' in Kepler archive"
+            )
+    
     return DetectionResponse(
         kepler_id=kepler_id,
         candidates_found=len(candidates),
